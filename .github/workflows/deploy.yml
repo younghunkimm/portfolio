@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20  # 로컬에서 쓰는 버전에 맞춰도 됨
+          node-version: 20
           cache: npm
 
       - name: Install dependencies
@@ -28,4 +28,7 @@ jobs:
       - name: Deploy to GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx gh-pages -d dist -u "github-actions-bot <actions@github.com>"
+        run: |
+          npx gh-pages -d dist \
+            --repo https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git \
+            -u "github-actions-bot <actions@github.com>"
