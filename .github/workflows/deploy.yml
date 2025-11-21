@@ -3,7 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main   # main 브랜치에 push 될 때마다 실행
+      - main
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
