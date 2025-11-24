@@ -34,7 +34,7 @@ const ProjectsSection = () => {
             이를 해결하기 위해 Redis를 활용한 멱등성 처리 로직을 구현 - 알림
             이벤트가 발행될 때 고유한 식별자(Trace ID)를 생성 - 이 때, Trace
             ID는 알림을 식별할 수 있도록 고유한 값들을 조합하여 UUID로 변환하여
-            사용
+            사용 test
         </Section>
     );
 };
