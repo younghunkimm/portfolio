@@ -4,37 +4,42 @@ import ZoomImage from "../components/image/ZoomImage";
 import BrainStorming from "../assets/images/brain_storming.svg";
 
 const ProjectsSection = () => {
+    const couponPopUrl = `${import.meta.env.BASE_URL}couponpop`;
+
     return (
         <Section title="Project">
-            쿠폰팝 <a href="https://github.com/CouponPop"></a>
-            2025.10.13 ~ 2025.11.18 | 팀원 4명 spring boot, MySQL ...
-            <br />
-            쿠폰 알림 서비스, 배치 서비스 설계 및 개발
-            <br />
+            <p className="mb-3 text-lg font-semibold">
+                쿠폰팝{" "}
+                <a
+                    href={couponPopUrl}
+                    className="text-primary underline underline-offset-4 transition hover:text-primary/80 hover:no-underline"
+                >
+                    /couponpop
+                </a>
+            </p>
+            <p className="mb-3 text-text-soft">
+                2025.10.13 ~ 2025.11.18 | 팀원 4명 | Spring Boot, MySQL, Redis,
+                FCM
+            </p>
+            <p className="mb-6">
+                쿠폰 알림 서비스의 알림/배치 파트를 맡아 중복 발송 방지와 예약
+                알림 스케줄링을 설계하고 개발했습니다.
+            </p>
             <ZoomImage
                 src={BrainStorming}
                 alt="Brain Storming"
-                className="mb-4 w-100"
+                className="mb-6 w-100"
             />
-            <ZoomImage
-                src={BrainStorming}
-                alt="Brain Storming"
-                className="mb-4 w-100"
-            />
-            <br />
-            중복 알림 발송 방지를 위해 Redis를 활용한 멱등성 처리
-            <br />
-            FCM 알림이 특정 상황에서 중복 발송되는 문제 발생 재시도 로직이
-            개입되거나 동일 이벤트가 여러 번 발행되면 같은 알림이 사용자에게
-            여러 번 전달됨 문제의 핵심은 각 알림 이벤트를 고유하게 식별할 수
-            있는 값이 없다는 점 - 발행 측에서 알림마다 고유한 식별자를 생성하지
-            않음 - 수신 측에서는 이벤트가 중복인지 확인할 방법이 없음 - 결국
-            재시도나 중복 발행이 모두 중복 알림 발송으로 이어짐
-            <br />
-            이를 해결하기 위해 Redis를 활용한 멱등성 처리 로직을 구현 - 알림
-            이벤트가 발행될 때 고유한 식별자(Trace ID)를 생성 - 이 때, Trace
-            ID는 알림을 식별할 수 있도록 고유한 값들을 조합하여 UUID로 변환하여
-            사용
+            <p className="mb-2">중복 알림 발송을 막기 위한 멱등성 처리:</p>
+            <ul className="mb-4 list-disc space-y-2 pl-5">
+                <li>알림 이벤트마다 Trace ID를 생성해 Redis에 저장</li>
+                <li>동일 Trace ID가 이미 처리됐으면 추가 발송 차단</li>
+                <li>재시도/중복 발행 시에도 한 번만 알림이 전달되도록 보장</li>
+            </ul>
+            <p className="text-text-soft">
+                구독/쿠폰 데이터는 MySQL로 관리하고, 예약/주기 알림은 배치로
+                처리해 지연을 최소화했습니다.
+            </p>
         </Section>
     );
 };
