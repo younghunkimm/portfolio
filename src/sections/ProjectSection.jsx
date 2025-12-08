@@ -38,7 +38,7 @@ const ProjectsSection = () => {
             </ul>
             <p className="text-text-soft">
                 구독/쿠폰 데이터는 MySQL로 관리하고, 예약/주기 알림은 배치로
-                처리해 지연을 최소화했습니다.
+                처리해 지연을 최소화했습니다. test
             </p>
         </Section>
     );
