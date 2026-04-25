@@ -1,23 +1,28 @@
 import { useEffect, useRef } from "react";
 import mermaid from "mermaid";
 
+mermaid.initialize({
+    startOnLoad: false,
+    theme: "dark",
+});
+
 const Mermaid = ({ chart }) => {
     const ref = useRef(null);
-    const rendered = useRef(false);
 
     useEffect(() => {
-        if (rendered.current) return;
-        rendered.current = true;
+        if (!ref.current) return;
 
-        const id = "mermaid-" + Math.random().toString(36).slice(2);
+        const id = "mermaid-" + crypto.randomUUID();
 
-        mermaid.initialize({ startOnLoad: false, theme: "dark" });
+        ref.current.innerHTML = "";
 
-        mermaid.render(id, chart.trim()).then(({ svg }) => {
-            if (ref.current) {
-                ref.current.innerHTML = svg;
-            }
-        });
+        setTimeout(() => {
+            mermaid.render(id, chart.trim()).then(({ svg }) => {
+                if (ref.current) {
+                    ref.current.innerHTML = svg;
+                }
+            });
+        }, 0); // 👉 이거 중요 (렌더 타이밍 보정)
     }, [chart]);
 
     return <div ref={ref} />;
