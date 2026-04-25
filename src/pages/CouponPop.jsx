@@ -11,6 +11,9 @@ import BulletList from "../components/project/BulletList";
 // cover
 import CouponPopCover from "../assets/images/couponpop_cover.jpg";
 
+// code
+import CodeBlock from "../components/CodeBlock/CodeBlock";
+
 // image
 import InfraArchitectureImage from "../assets/projects/couponpop/infra_architecture.png";
 import ErdMonoImage from "../assets/projects/couponpop/erd_mono.png";
@@ -23,16 +26,6 @@ import ErdMSANotificationsImage from "../assets/projects/couponpop/erd_msa_notif
 import SpikeTest_1 from "../assets/projects/couponpop/spike_test_1.png";
 import RampUpTest_1 from "../assets/projects/couponpop/ramp_up_test_1.png";
 import RampUpTest_2 from "../assets/projects/couponpop/ramp_up_test_2.png";
-import CodeTraceId from "../assets/projects/couponpop/code_trace_id.png";
-import CodeAcquireProcessingKey from "../assets/projects/couponpop/code_acquire_processing_key.png";
-import CodeMarkAsDoneTraceId from "../assets/projects/couponpop/code_mark_as_done_trace_id.png";
-import CodeReleaseTraceId from "../assets/projects/couponpop/code_release_trace_id.png";
-import CodeFirebaseMessagingException from "../assets/projects/couponpop/code_firebase_messaging_exception.png";
-import CodeRabbitmqRetryPolicy from "../assets/projects/couponpop/code_rabbitmq_retry_policy.png";
-import CodeFcmRetryCheck from "../assets/projects/couponpop/code_fcm_retryable_check.png";
-import CodeFcmCompletionException from "../assets/projects/couponpop/code_fcm_completion_exception.png";
-import CodeSpringRetryPolicy from "../assets/projects/couponpop/code_spring_retry_policy.png";
-import CodeDlqSlack from "../assets/projects/couponpop/code_dlq_slack.png";
 
 const CouponPopPage = () => {
     return (
@@ -210,10 +203,15 @@ const CouponPopPage = () => {
                             <>
                                 알림을 식별할 수 있도록 '고유한 조합값 → UUID
                                 변환 → traceId' 생성
-                                <ImageBox
-                                    src={CodeTraceId}
-                                    label="traceId Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`String traceId = NotificationTraceIdGenerator
+				.generate(item.aggregatedAt(), memberId, token, topDong, topHour);
+
+CouponUsageStatsFcmSendMessage couponUsageStatsFcmSendMessage =
+		CouponUsageStatsFcmSendMessage.of(traceId, memberId, token, topDong, topHour, activeEventCount);
+		
+couponUsageStatsFcmSendPublisher.publish(couponUsageStatsFcmSendMessage);`}
+                                </CodeBlock>
                             </>,
                             "동일한 입력 조합 → 항상 동일 UUID",
                             "이벤트 객체에 traceId 포함 후 발행",
@@ -224,10 +222,16 @@ const CouponPopPage = () => {
                         items={[
                             <>
                                 알림 처리 여부를 Redis SET NX 로 판단
-                                <ImageBox
-                                    src={CodeAcquireProcessingKey}
-                                    label="Acquire Processing Key Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`public boolean acquireProcessingKey(String traceId) {
+
+    String key = KEY_PATTERN.formatted(traceId);
+    // 키가 없을 때만 설정 (멱등성 보장)
+    Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(key, PROCESSING_VALUE, PROCESSION_TTL);
+
+    return Boolean.TRUE.equals(success);
+}`}
+                                </CodeBlock>
                             </>,
                             "존재하는 traceId → false → 즉시 종료",
                             "존재하지 않는 traceId -> true -> 알림 발송 진행",
@@ -238,10 +242,13 @@ const CouponPopPage = () => {
                         items={[
                             <>
                                 최근 7일간은 중복 발송을 확실하게 차단
-                                <ImageBox
-                                    src={CodeMarkAsDoneTraceId}
-                                    label="Mark as Done Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`public void markAsDone(String traceId) {
+
+    String key = KEY_PATTERN.formatted(traceId);
+    stringRedisTemplate.opsForValue().set(key, DONE_VALUE, DONE_TTL);
+}`}
+                                </CodeBlock>
                             </>,
                         ]}
                     />
@@ -250,10 +257,12 @@ const CouponPopPage = () => {
                         items={[
                             <>
                                 재시도 가능하도록 즉시 삭제
-                                <ImageBox
-                                    src={CodeReleaseTraceId}
-                                    label="Release TraceId Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`public void release(String traceId) {
+
+    stringRedisTemplate.delete(KEY_PATTERN.formatted(traceId));
+}`}
+                                </CodeBlock>
                             </>,
                         ]}
                     />
@@ -298,10 +307,29 @@ const CouponPopPage = () => {
                             </>,
                             <>
                                 이걸 활용해 다음처럼 나눌 수 있음
-                                <ImageBox
-                                    src={CodeFirebaseMessagingException}
-                                    label="Firebase Messaging Exception Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`private boolean isRetryable(FirebaseMessagingException e) {
+
+    MessagingErrorCode errorCode = e.getMessagingErrorCode();
+
+    if (errorCode != null) {
+        return switch (errorCode) {
+            case INTERNAL, /* 서버 내부 오류 */
+                 UNAVAILABLE, /* FCM 서비스 사용 불가 */
+                 QUOTA_EXCEEDED /* 할당량 초과 */ -> true;
+            default -> false;
+        };
+    }
+
+    IncomingHttpResponse httpResponse = e.getHttpResponse();
+    if (httpResponse == null) {
+        return false;
+    }
+    int statusCode = httpResponse.getStatusCode();
+    return statusCode == 429 // Too Many Requests
+            || (500 <= statusCode && statusCode < 600); // 5xx 서버 오류
+}`}
+                                </CodeBlock>
                                 하지만 초반에는 이런 분류 로직 없이 "일단 다
                                 재시도" 혹은 "일단 다 실패 처리" 같은 식으로
                                 다뤘고, 그 결과
@@ -332,10 +360,44 @@ const CouponPopPage = () => {
                             </>,
                             <>
                                 최종 정리
-                                <ImageBox
-                                    src={CodeRabbitmqRetryPolicy}
-                                    label="RabbitMQ Retry Policy Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`@Bean
+public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+        ConnectionFactory connectionFactory,
+        MessageConverter rabbitListenerMessageConverter
+) {
+
+    // AmqpRejectAndDontRequeueException은 즉시 DLQ로 보내도록 재시도 대상에서 제외
+    Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>();
+    retryableExceptions.put(AmqpRejectAndDontRequeueException.class, false);
+
+    SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(
+            MAX_ATTEMPTS, // 최대 재시도 횟수
+            retryableExceptions, // 재시도 대상 제외 설정
+            true // 나머지 예외는 재시도 대상
+    );
+
+    // 재시도 인터셉터 설정
+    RetryOperationsInterceptor retryAdvice = RetryInterceptorBuilder.stateless()
+            // 재시도 정책 설정
+            .retryPolicy(retryPolicy)
+            // 지수 백오프 기반 재시도 설정 (1초, 2초, 4초, 8초, ...)
+            .backOffOptions(BACKOFF_INITIAL_INTERVAL, BACKOFF_MULTIPLIER, BACKOFF_MAX_INTERVAL)
+            // RetryInterceptor가 최대 재시도 횟수를 모두 소진했을 때 호출되는 복구 전략 (재큐잉하지 않고 바로 DLX로 보냄)
+            .recoverer(new RejectAndDontRequeueRecoverer())
+            .build();
+
+    SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+    factory.setConnectionFactory(connectionFactory);
+    factory.setMessageConverter(rabbitListenerMessageConverter);
+    factory.setConcurrentConsumers(DEFAULT_CONCURRENT_CONSUMERS); // 기본 동시 소비자 수
+    factory.setMaxConcurrentConsumers(MAX_CONCURRENT_CONSUMERS);  // 최대 동시 소비자 수
+    factory.setPrefetchCount(PREFETCH_COUNT);  // 한 번에 가져올 메시지 수
+    factory.setDefaultRequeueRejected(false);  // 예외 시 재큐잉 여부 - nack(requeue=false) 설정
+    factory.setAdviceChain(retryAdvice);
+    return factory;
+}`}
+                                </CodeBlock>
                                 - 기본적으로 모든 예외는 재시도 대상
                                 <br />
                                 - 단, AmqpRejectAndDontRequeueException 은
@@ -356,13 +418,32 @@ const CouponPopPage = () => {
                                 <br />
                                 - RetryableFcmException: 재시도하면 성공
                                 가능성이 있는 경우
-                                <br />
-                                - NonRetryableFcmException: 재시도해도 의미 없는
-                                경우 (잘못된 토큰, 유효하지 않은 요청 등)
-                                <ImageBox
-                                    src={CodeFcmRetryCheck}
-                                    label="FCM Retry Check Code"
-                                />
+                                <br />- NonRetryableFcmException: 재시도해도
+                                의미 없는 경우 (잘못된 토큰, 유효하지 않은 요청
+                                등)
+                                <CodeBlock language="java">
+                                    {`public CompletableFuture<Void> sendNotification(String traceId, Long memberId, String token, String title, String body) {
+
+    return CompletableFuture.runAsync(() -> {
+        // ...
+
+        try {
+            String messageId = firebaseMessaging.send(message);
+            // ...
+        } catch (FirebaseMessagingException e) {
+            // ...
+
+            if (isRetryable(e)) {
+                throw new RetryableFcmException(e.getMessage(), e); // 재시도 가능한 예외
+            }
+            throw new NonRetryableFcmException(e.getMessage(), e); // 재시도 불가능한 예외
+        } catch (Exception e) {
+            // ...
+            throw new NonRetryableFcmException("FCM 전송 중 예상치 못한 오류가 발생했습니다.", e);
+        }
+    }, fcmTaskExecutor);
+}`}
+                                </CodeBlock>
                                 이렇게 해서 FCM 발송 서비스의 역할은 "예외
                                 분류"까지만 담당하도록 설계
                             </>,
@@ -377,10 +458,29 @@ const CouponPopPage = () => {
                                 <br />
                                 그게 RetryableFcmException 인지 여부에 따라
                                 DLQ로 보낼지 재시도할지를 결정
-                                <ImageBox
-                                    src={CodeFcmCompletionException}
-                                    label="FCM Completion Exception Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`@RabbitListener(queues = COUPON_USAGE_STATS_FCM_SEND_QUEUE)
+public void handle(CouponUsageStatsFcmSendMessage payload) {
+
+    try {
+        // ...
+
+        // FCM 알림 푸시 실패 시 재시도/DLQ 처리를 위해 Blocking
+        fcmSendService.sendNotification(traceId, memberId, token, title, body).join();
+    } catch (CompletionException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof NonRetryableFcmException nonRetryable) {
+            log.warn("재시도 불가 FCM 전송: memberId={}, reason={}", payload.memberId(), nonRetryable.getMessage());
+
+            // 재시도 불가 예외는 DLQ로 보내기 위해 AmqpRejectAndDontRequeueException으로 래핑
+            throw new AmqpRejectAndDontRequeueException(nonRetryable.getMessage(), nonRetryable);
+        }
+
+        // 그 외 예외는 재시도 가능하므로 그대로 예외 던지기
+        throw e;
+    }
+}`}
+                                </CodeBlock>
                                 - NonRetryableFcmException →
                                 AmqpRejectAndDontRequeueException으로 래핑해서
                                 throw → 재시도 정책에서 제외시키고, 즉시 DLQ
@@ -403,13 +503,29 @@ const CouponPopPage = () => {
                                 - 최대 횟수(5번) 소진 시 →
                                 RejectAndDontRequeueRecoverer →
                                 NACK(requeue=false) → DLX로 이동
-                                <br />
-                                - AmqpRejectAndDontRequeueException → 아예
+                                <br />- AmqpRejectAndDontRequeueException → 아예
                                 재시도 정책에서 제외 → 바로 DLX
-                                <ImageBox
-                                    src={CodeSpringRetryPolicy}
-                                    label="Spring Retry Policy Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`// AmqpRejectAndDontRequeueException은 즉시 DLQ로 보내도록 재시도 대상에서 제외
+Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>();
+retryableExceptions.put(AmqpRejectAndDontRequeueException.class, false);
+
+SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(
+        MAX_ATTEMPTS, // 최대 재시도 횟수 (예: 5회)
+        retryableExceptions, // 재시도 대상 제외 설정
+        true // 나머지 예외는 재시도 대상
+);
+
+// 재시도 인터셉터 설정
+RetryOperationsInterceptor retryAdvice = RetryInterceptorBuilder.stateless()
+        // 재시도 정책 설정
+        .retryPolicy(retryPolicy)
+        // 지수 백오프 기반 재시도 설정 (1초, 2초, 4초, 8초, ...)
+        .backOffOptions(BACKOFF_INITIAL_INTERVAL, BACKOFF_MULTIPLIER, BACKOFF_MAX_INTERVAL)
+        // 최대 재시도 횟수 모두 소진 시, 재큐잉하지 않고 바로 DLX로 보냄
+        .recoverer(new RejectAndDontRequeueRecoverer())
+        .build();`}
+                                </CodeBlock>
                             </>,
                         ]}
                     />
@@ -418,10 +534,32 @@ const CouponPopPage = () => {
                         items={[
                             <>
                                 DLQ로 쌓인 메세지는 별도 Listener에서 처리
-                                <ImageBox
-                                    src={CodeDlqSlack}
-                                    label="DLQ Slack Code"
-                                />
+                                <CodeBlock language="java">
+                                    {`@RabbitListener(queues = COUPON_USAGE_STATS_FCM_SEND_DLQ)
+public void handleDlq(CouponUsageStatsFcmSendMessage payload, Message message) {
+
+    log.error("쿠폰 사용 통계 FCM DLQ 적재: memberId={}, token={}, headers={}",
+            payload.memberId(),
+            payload.token(),
+            message.getMessageProperties().getHeaders());
+
+    // Slack 알림 전송
+    Map<String, Object> headers = message.getMessageProperties().getHeaders();
+    Map<String, String> slackData = Map.ofEntries(
+            entry("traceId", safeString(payload.traceId())),
+            entry("memberId", safeString(payload.memberId())),
+            entry("token", maskToken(payload.token())),
+            entry("topDong", safeString(payload.topDong())),
+            entry("topHour", safeString(payload.topHour())),
+            entry("activeEventCount", safeString(payload.activeEventCount())),
+            entry("xDeath", safeString(headers.get("x-death"))),
+            entry("exception", safeString(headers.get("x-exception-message"))),
+            entry("stacktrace", safeString(headers.get("x-exception-stacktrace"))),
+            entry("routingKey", safeString(message.getMessageProperties().getReceivedRoutingKey()))
+    );
+    slackService.sendMessage("쿠폰 사용 통계 FCM DLQ 적재", slackData);
+}`}
+                                </CodeBlock>
                                 DLQ 적재 시점에 에러 정보를 Slack으로 전송해서
                                 알림 유실이 장기화되기 전에 바로 인지할 수
                                 있도록 처리
