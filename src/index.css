@@ -10,17 +10,29 @@
     --color-primary: oklch(68.1% 0.162 75.834);
 }
 
-:root {
-    font-family: "Pretendard Variable", "Pretendard", system-ui, -apple-system,
-        sans-serif;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+@layer base {
+    :root {
+        font-family: "Pretendard Variable", "Pretendard", system-ui,
+            -apple-system, sans-serif;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        --hero-gradient: linear-gradient(90deg, #bae6fd, #a7f3d0, #fcd34d);
+    }
+
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.6;
+        word-break: keep-all;
+    }
 }
 
-body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    line-height: 1.6;
-    word-break: keep-all;
+@layer components {
+    .text-hero-gradient {
+        background-image: var(--hero-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
 }

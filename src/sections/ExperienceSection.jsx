@@ -13,7 +13,7 @@ const ExperienceSection = () => {
                 <Experience
                     period="2022.05.09 ~ 2025.05.01"
                     topic="PGMLife"
-                    description="ERP 고도화 및 유지보수 / 쇼핑몰 개발"
+                    description="ERP 고도화 / 쇼핑몰 개발"
                 />
             </ul>
         </Section>
