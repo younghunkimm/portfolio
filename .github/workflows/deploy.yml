@@ -35,4 +35,3 @@ jobs:
                   npx gh-pages -d dist \
                     --repo https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git \
                     -u "github-actions-bot <actions@github.com>" \
-                    -f
