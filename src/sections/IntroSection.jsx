@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import { useEffect, useRef } from "react";
 import GithubIcon from "../components/icon/GithubIcon";
 import MailIcon from "../components/icon/MailIcon";
@@ -62,8 +64,8 @@ const IntroSection = () => {
 
     const SocialButton = ({ href, icon: Icon, color }) => {
         return (
-            <a
-                href={href}
+            <Link
+                to={href}
                 className="group flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] shadow-[0_10px_45px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:bg-white/[0.08]"
                 style={{
                     color,
@@ -73,7 +75,7 @@ const IntroSection = () => {
                 target="_blank"
             >
                 <Icon className="h-6 w-6 transition-transform duration-200 group-hover:scale-110" />
-            </a>
+            </Link>
         );
     };
 

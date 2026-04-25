@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import Section from "../layout/Section";
 import BaseImage from "../components/image/BaseImage";
 
@@ -51,22 +53,22 @@ const Description = ({ lines }) => (
 
 const ProjectLinks = ({ github, detail }) => (
     <div className="mt-auto flex gap-2">
-        <a
-            href={github}
+        <Link
+            to={github}
             className="flex items-center rounded-lg border border-primary px-3 py-2 text-center text-sm font-semibold text-primary transition hover:bg-primary hover:text-black"
             target="_blank"
         >
             <GithubIcon className="w-4 h-4 inline-block mr-1" />
             Github
-        </a>
-        <a
-            href={detail}
+        </Link>
+        <Link
+            to={detail}
             className="flex items-center rounded-lg bg-primary px-3 py-2 text-center text-sm font-semibold text-black transition hover:opacity-90"
             target="_blank"
         >
             <HyperlinkIcon className="w-4 h-4 inline-block mr-1" />
             Detail
-        </a>
+        </Link>
     </div>
 );
 
@@ -104,7 +106,7 @@ const ProjectsSection = () => {
                 "사용자의 현재 위치 기반으로 주변 매장에서 제공하는 한정 수량 쿠폰을 실시간 발급해주는 지역 특화 프로모션 플랫폼",
             ],
             github: "https://github.com/CouponPop",
-            detail: `${import.meta.env.BASE_URL}couponpop`,
+            detail: `/couponpop`,
             image: CouponPopCover,
         },
         {
@@ -122,7 +124,7 @@ const ProjectsSection = () => {
                 "대학 수강신청 시스템의 대용량 트래픽 환경에서 발생하는 동시성 문제를 해결하고 성능을 최적화한 프로젝트",
             ],
             github: "https://github.com/jhj-company/hyejoon-cuv-course",
-            detail: `${import.meta.env.BASE_URL}cuv-course`,
+            detail: `/cuv-course`,
             image: TeamSpartaCover,
         },
         {
@@ -133,7 +135,7 @@ const ProjectsSection = () => {
                 "회원 인증(JWT), 사용자 관리, Todo 관리(작성/목록/상세/검색), 파일 업로드(S3 Presigned URL), Todo 매니저 관리 등 실무 기능을 담은 Spring Boot 3 기반 서버 애플리케이션",
             ],
             github: "https://github.com/younghunkimm/sparta-spring-plus",
-            detail: `${import.meta.env.BASE_URL}todo-api`,
+            detail: `/todo-api`,
             image: TeamSpartaCover,
         },
     ];
