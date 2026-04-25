@@ -31,7 +31,7 @@ const CouponPopPage = () => {
     return (
         <Layout>
             {/* 프로젝트 개요 */}
-            <Section title="쿠폰팝 (CouponPop)">
+            <Section title="쿠폰팝 (CouponPop) - test">
                 <ProjectOverview
                     description={
                         <>
