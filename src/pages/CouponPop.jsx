@@ -19,7 +19,7 @@ import CodeBlock from "../components/CodeBlock/CodeBlock";
 import InfoTable from "../components/InfoTable/InfoTable";
 
 // image
-import BrainStormingImage from "../assets/images/brain_storming.svg";
+import BrainStormingImage from "../assets/projects/couponpop/brain_storming.svg";
 import InfraArchitectureImage from "../assets/projects/couponpop/infra_architecture.png";
 import ErdMonoImage from "../assets/projects/couponpop/erd_mono.png";
 import ErdMSAMemberImage from "../assets/projects/couponpop/erd_msa_members.png";
@@ -68,7 +68,6 @@ const CouponPopPage = () => {
                         info={[
                             "기간: 2025.10.13 ~ 2025.11.18",
                             "팀원: 백엔드 4명",
-                            "역할: 알림/이벤트 설계 및 구현",
                             "스택: Java 17, Spring Boot 3.x, MySQL 8.x, Redis, RabbitMQ, FCM, Flyway, OpenFeign, Slack Webhook, K6, Prometheus, Grafana",
                             "배포/운영: AWS(ECS/ALB), Jenkins, Blue/Green",
                         ]}

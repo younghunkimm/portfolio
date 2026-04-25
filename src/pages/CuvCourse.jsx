@@ -18,7 +18,8 @@ import CodeBlock from "../components/CodeBlock/CodeBlock";
 // table
 import InfoTable from "../components/InfoTable/InfoTable";
 
-// image
+// images
+import BrainStormingImage from "../assets/projects/cuvcourse/brain_storming.svg";
 import CachingCpuUsage from "../assets/projects/cuvcourse/caching_cpu_usage.png";
 import CachingTraffic from "../assets/projects/cuvcourse/caching_traffic.png";
 import OptimizingSearch from "../assets/projects/cuvcourse/optimizing_search.webp";
@@ -32,9 +33,9 @@ const CuvCoursePage = () => {
                     <ProjectOverview
                         description={
                             <>
-                                대학 수강신청 시스템의 대용량 트래픽 환경에서
-                                발생하는 동시성 문제를 해결하고 성능을 최적화한
-                                프로젝트입니다.
+                                대학 수강신청 시스템의 <b>대용량 트래픽 환경</b>
+                                에서 발생하는 동시성 문제를 해결하고 성능을
+                                최적화한 프로젝트입니다.
                             </>
                         }
                         metrics={[{ label: "데이터 일관성", value: "100%" }]}
@@ -51,10 +52,22 @@ const CuvCoursePage = () => {
                         info={[
                             "기간: 2025.08.26 ~ 2025.09.01",
                             "팀원: 백엔드 6명",
-                            "역할: 동시성 문제 해결, 캐싱, 인프라 환경 구축",
                             "스택: Java 17, Spring Boot 3.x, MySQL 8.x, Redis, Redisson, JPA, Flyway, Docker",
                         ]}
                     />
+                </Section>
+
+                {/* 브레인 스토밍 */}
+                <Section
+                    title="브레인 스토밍"
+                    link="https://www.tldraw.com/f/4C-7CmR1sCFdbBpcux18m?d=v-2305.68.5597.3324.ss0O2S-5yRn716fcl_llu"
+                >
+                    <ContentBox>
+                        <ImageBox
+                            src={BrainStormingImage}
+                            label="CUV Course Brain Storming"
+                        />
+                    </ContentBox>
                 </Section>
 
                 {/* 역할 */}

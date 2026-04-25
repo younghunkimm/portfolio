@@ -127,7 +127,7 @@ const ProjectsSection = () => {
         },
         {
             title: "Todo API",
-            period: "2025.08.18 ~ 2025.08.22 | 개인",
+            period: "2025.08.18 ~ 2025.08.22 | 개인 프로젝트",
             stack: ["Spring Boot", "MySQL", "Kotlin", "JPA"],
             description: [
                 "회원 인증(JWT), 사용자 관리, Todo 관리(작성/목록/상세/검색), 파일 업로드(S3 Presigned URL), Todo 매니저 관리 등 실무 기능을 담은 Spring Boot 3 기반 서버 애플리케이션",
