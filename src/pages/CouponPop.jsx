@@ -15,7 +15,11 @@ import CouponPopCover from "../assets/images/couponpop_cover.jpg";
 // code
 import CodeBlock from "../components/CodeBlock/CodeBlock";
 
+// table
+import InfoTable from "../components/InfoTable/InfoTable";
+
 // image
+import BrainStormingImage from "../assets/images/brain_storming.svg";
 import InfraArchitectureImage from "../assets/projects/couponpop/infra_architecture.png";
 import ErdMonoImage from "../assets/projects/couponpop/erd_mono.png";
 import ErdMSAMemberImage from "../assets/projects/couponpop/erd_msa_members.png";
@@ -71,14 +75,29 @@ const CouponPopPage = () => {
                     />
                 </Section>
 
+                {/* 브레인 스토밍 */}
+                <Section
+                    title="브레인 스토밍"
+                    link="https://www.tldraw.com/f/e5Roz5BijagLg-W4-2Amk?d=v-4514.2606.11803.6302.page"
+                >
+                    <ContentBox>
+                        <ImageBox
+                            src={BrainStormingImage}
+                            label="Couponpop Brain Storming"
+                        />
+                    </ContentBox>
+                </Section>
+
                 {/* 역할 */}
                 <Section title="내가 맡은 기능">
                     <ContentBox>
                         <BulletList
                             items={[
                                 "FCM 알림 시스템 설계 및 구현",
+                                "EDA 기반 이벤트 발행/구독 구조 설계",
                                 "Redis 멱등성 처리로 중복 알림 0건",
                                 "RabbitMQ 재시도/DLQ 전략 설계",
+                                "APM 모니터링 (Prometheus + Grafana)",
                                 "k6 성능 테스트 및 병목 분석",
                             ]}
                         />
@@ -571,33 +590,216 @@ public void handleDlq(CouponUsageStatsFcmSendMessage payload, Message message) {
                     </ContentBox>
                 </Section>
 
-                {/* 성능 */}
+                {/* 성능 개선 */}
                 <Section title="성능 개선: 쿠폰 발급 API">
-                    <ContentBox title="부하 테스트 결과">
+                    <ContentBox title="테스트 목적">
+                        <p>
+                            쿠폰 발급 API의 부하 대응 능력과 시스템 안정성 검증
+                        </p>
                         <BulletList
+                            title="확인 사항"
                             items={[
-                                "Spike(50 VU): p95 2.01s",
-                                "Ramp-Up(300 VU): p95 18.8s",
-                                "병목: ThreadPool / DB Connection / Lock",
+                                "정상 요청 처리율(성공률): HTTP 204 응답 비율 및 오류율(4xx, 5xx)",
+                                "응답 시간 안정성: 평균, p90, p95 응답시간 추이",
+                                "처리량(Throughput): 초당 처리 요청 수 및 지속적인 RPS 유지 가능 여부",
+                                "시스템 한계점(병목 구간): DB 락, 트랜잭션 대기, Redis 접근, CPU/메모리 포화 여부 등",
                             ]}
                         />
+                        <p>
+                            실제 서비스 운영 환경을 가정하여 급격 부하(Spike)와
+                            점진 증가 부하(Ramp-Up) 2가지 시나리오를 수행
+                        </p>
+                    </ContentBox>
+                    <ContentBox title="테스트 환경">
+                        <InfoTable
+                            headers={["구분", "항목", "내용"]}
+                            data={[
+                                [
+                                    "테스트 대상 API",
+                                    "/api/v1/coupons/issue",
+                                    "회원별 쿠폰 발급 요청",
+                                ],
+                                [
+                                    "테스트 도구",
+                                    "k6 + InfluxDB + Grafana",
+                                    "성능 지표 수집 및 시각화",
+                                ],
+                                [
+                                    "부하 주체(VU)",
+                                    "최대 300 Virtual Users",
+                                    "k6 가상 사용자 동시 요청 수행",
+                                ],
+                                ["테스트 기간", "2일", ""],
+                                ["DB 환경", "MySQL", ""],
+                                [
+                                    "Cache/Queue",
+                                    "Redis, RabbitMQ",
+                                    "본래 쿠폰 발급 후 FCM 이벤트 과정도 포함이지만 부하 테스트만을 위해 제외",
+                                ],
+                                [
+                                    "모니터링 도구",
+                                    "Grafana + Prometheus Exporter (Node, MySQL, Redis)",
+                                    "",
+                                ],
+                                [
+                                    "테스트 방식",
+                                    "급격 부하(Spike) + 점진 증가 부하(Ramp-Up)",
+                                    "",
+                                ],
+                            ]}
+                        />
+                    </ContentBox>
+                    <ContentBox title="테스트 시나리오">
+                        <InfoTable
+                            headers={[
+                                "시나리오",
+                                "유형",
+                                "목표",
+                                "주요 파라미터",
+                                "테스트 시간",
+                            ]}
+                            data={[
+                                [
+                                    "Scenario #1",
+                                    "Spike Test",
+                                    "순간 트래픽 급증 시 시스템 응답 안정성 확인",
+                                    "50 VUs",
+                                    "15초",
+                                ],
+                                [
+                                    "Scenario #2",
+                                    "Ramp-Up Test",
+                                    "점진적 증가 후 시스템 확장성 확인",
+                                    "50 → 300 VUs",
+                                    "16분",
+                                ],
+                            ]}
+                        />
+                    </ContentBox>
+                    <ContentBox title="결과 요약">
+                        <InfoTable
+                            headers={[
+                                "구분",
+                                "부하 형태",
+                                "VUs",
+                                "평균 응답시간",
+                                "p95",
+                                "실패율",
+                                "주요 원인",
+                                "안정성",
+                            ]}
+                            data={[
+                                [
+                                    "Smoke Test",
+                                    "단건 발급",
+                                    "5",
+                                    "14ms",
+                                    "32ms",
+                                    "91%*",
+                                    "1회원 1쿠폰 정책 적용",
+                                    "✅ 정상",
+                                ],
+                                [
+                                    "Spike Test",
+                                    "단기 급격 부하",
+                                    "50",
+                                    "1.17s",
+                                    "2.01s",
+                                    "26%",
+                                    "순간 과부하, ThreadPool 포화",
+                                    "⚠️ 보통",
+                                ],
+                                [
+                                    "Ramp-Up",
+                                    "점진 증가",
+                                    "300",
+                                    "6.23s",
+                                    "18.8s",
+                                    "20%",
+                                    "자원 포화(DB/Thread Pool)",
+                                    "❌ 불안정",
+                                ],
+                            ]}
+                        />
+                        <p>(*비즈니스 로직상 실패, 시스템 오류 아님)</p>
+                    </ContentBox>
+                    <ContentBox title="Spike Test 결과">
                         <ImageBox src={SpikeTest_1} label="Spike 테스트 1" />
+                    </ContentBox>
+                    <ContentBox title="Ramp-Up Test 결과">
                         <ImageBox src={RampUpTest_1} label="Ramp-Up 테스트 1" />
                         <ImageBox src={RampUpTest_2} label="Ramp-Up 테스트 2" />
                     </ContentBox>
+                    <ContentBox title="종합 결론">
+                        <InfoTable
+                            headers={["구분", "내용"]}
+                            data={[
+                                [
+                                    "1. 기능적 안정성",
+                                    <>
+                                        <BulletList
+                                            items={[
+                                                "중복 방지 및 트랜잭션 처리 정상",
+                                                "Smoke Test에서 정책 정상 적용 확인",
+                                            ]}
+                                        />
+                                    </>,
+                                ],
+                                [
+                                    "2. 성능 병목 구간",
+                                    <>
+                                        <BulletList
+                                            items={[
+                                                "Spike 구간: p95 > 2s",
+                                                "Ramp-Up 구간: p95 > 18s",
+                                                "ThreadPool, Connection Pool 점검 필요",
+                                            ]}
+                                        />
+                                    </>,
+                                ],
+                                [
+                                    "3. 시스템 한계",
+                                    <>
+                                        <BulletList
+                                            items={[
+                                                "안정적 처리 가능 VU: 100명",
+                                                "초과 시 지연/타임아웃 발생",
+                                            ]}
+                                        />
+                                    </>,
+                                ],
+                                [
+                                    "4. 향후 개선",
+                                    <>
+                                        <BulletList
+                                            items={[
+                                                "Pool 및 큐 관리 최적화",
+                                                "Redis 기반 캐싱 도입 ex) 쿠폰 발급 시 현재는 DB 조회 후 처리",
+                                                "Grafana 기반 p95/p99 응답 시간 모니터링",
+                                                "DB 성능 분석 (slow query, lock contention)",
+                                            ]}
+                                        />
+                                    </>,
+                                ],
+                            ]}
+                        />
+                    </ContentBox>
+                </Section>
+
+                {/* 인프라 아키텍처 */}
+                <Section title="인프라 아키텍처">
+                    <ImageBox
+                        src={InfraArchitectureImage}
+                        label="인프라 아키텍처"
+                    />
                 </Section>
 
                 {/* ERD */}
                 <Section title="모놀리식 ERD 구성">
-                    <ContentBox title="">
-                        <ImageBox src={ErdMonoImage} label="모놀리식 ERD" />
-                    </ContentBox>
+                    <ImageBox src={ErdMonoImage} label="모놀리식 ERD" />
                 </Section>
                 <Section title="MSA ERD 구성">
-                    <ContentBox
-                        title=""
-                        className="grid gap-6 md:grid-cols-3 sm:grid-cols-2"
-                    >
+                    <div className="grid gap-6 md:grid-cols-3 sm:grid-cols-2">
                         <ImageBox
                             src={ErdMSAMemberImage}
                             label="MSA Member ERD"
@@ -622,17 +824,7 @@ public void handleDlq(CouponUsageStatsFcmSendMessage payload, Message message) {
                             src={ErdMSANotificationsImage}
                             label="MSA Notifications ERD"
                         />
-                    </ContentBox>
-                </Section>
-
-                {/* 인프라 아키텍처 */}
-                <Section title="인프라 아키텍처">
-                    <ContentBox title="">
-                        <ImageBox
-                            src={InfraArchitectureImage}
-                            label="인프라 아키텍처"
-                        />
-                    </ContentBox>
+                    </div>
                 </Section>
             </Layout>
         </Wrapper>
