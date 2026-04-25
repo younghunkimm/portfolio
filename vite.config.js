@@ -6,4 +6,14 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
     plugins: [react(), tailwindcss()],
     base: "/portfolio/",
+    optimizeDeps: {
+        include: ["mermaid"],
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: undefined,
+            },
+        },
+    },
 });
