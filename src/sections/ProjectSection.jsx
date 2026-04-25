@@ -7,12 +7,6 @@ import TeamSpartaCover from "../assets/images/teamsparta_cover.png";
 import GithubIcon from "../components/icon/GithubIcon";
 import HyperlinkIcon from "../components/icon/HyperlinkIcon";
 
-const Role = ({ role }) => (
-    <span className="mb-3 inline-flex w-fit items-center rounded-full bg-primary/20 px-3 py-1 text-sm font-semibold text-primary">
-        {role}
-    </span>
-);
-
 const ProjectImage = ({ image, title }) => (
     <div className="mb-4 aspect-video overflow-hidden rounded-xl bg-slate-900/60">
         {image ? (
@@ -79,7 +73,6 @@ const ProjectLinks = ({ github, detail }) => (
 const ProjectCard = ({
     title,
     period,
-    role,
     stack,
     description,
     github,
@@ -92,7 +85,6 @@ const ProjectCard = ({
         <div className="pointer-events-none absolute bottom-0 right-[-40px] h-40 w-40 rounded-full bg-primary/10 blur-3xl transition duration-500 group-hover:scale-110" />
 
         <div className="relative z-10 flex h-full flex-col">
-            <Role role={role} />
             <ProjectImage image={image} title={title} />
             <ProjectHeader title={title} period={period} />
             <TechStack stack={stack} />
@@ -105,9 +97,8 @@ const ProjectCard = ({
 const ProjectsSection = () => {
     const projects = [
         {
-            title: "쿠폰팝",
+            title: "COUPONPOP",
             period: "2025.10.13 ~ 2025.11.18 | 팀원 4명",
-            role: "알림/배치 설계 및 개발",
             stack: ["Spring Boot", "MySQL", "RabbitMQ", "Redis", "FCM"],
             description: [
                 "사용자의 현재 위치 기반으로 주변 매장에서 제공하는 한정 수량 쿠폰을 실시간 발급해주는 지역 특화 프로모션 플랫폼",
@@ -117,29 +108,32 @@ const ProjectsSection = () => {
             image: CouponPopCover,
         },
         {
-            title: "ERP 고도화",
-            period: "2022.05.09 ~ 2025.05.01",
-            role: "재고/정산 모듈 개선 및 유지보수",
-            stack: ["PHP", "Laravel", "MySQL", "AWS"],
-            description: [
-                "정산·재고 핵심 쿼리와 캐싱을 최적화해 응답 시간을 단축했습니다.",
-                "운영·배포 자동화를 통해 장애 대응 시간을 줄이고 안정성을 높였습니다.",
+            title: "수강신청 플랫폼",
+            period: "2025.08.26 ~ 2025.09.01 | 팀원 6명",
+            stack: [
+                "Spring Boot",
+                "MySQL",
+                "Redis",
+                "Reddison",
+                "JPA",
+                "Docker",
             ],
-            github: "https://github.com/younghunkimm",
-            detail: "#",
+            description: [
+                "대학 수강신청 시스템의 대용량 트래픽 환경에서 발생하는 동시성 문제를 해결하고 성능을 최적화한 프로젝트",
+            ],
+            github: "https://github.com/jhj-company/hyejoon-cuv-course",
+            detail: `${import.meta.env.BASE_URL}cuv-course`,
             image: TeamSpartaCover,
         },
         {
-            title: "쇼핑몰 개발",
-            period: "2022 ~ 2025",
-            role: "프론트/백엔드 기능 개발",
-            stack: ["PHP", "JavaScript", "MySQL", "Docker"],
+            title: "Todo API",
+            period: "2025.08.18 ~ 2025.08.22 | 개인",
+            stack: ["Spring Boot", "MySQL", "Kotlin", "JPA"],
             description: [
-                "주문/결제 플로우를 안정화하고 운영툴을 확장해 CS 처리 시간을 줄였습니다.",
-                "CI/CD를 단순화해 배포 리드타임을 단축하고 운영 안정성을 높였습니다.",
+                "회원 인증(JWT), 사용자 관리, Todo 관리(작성/목록/상세/검색), 파일 업로드(S3 Presigned URL), Todo 매니저 관리 등 실무 기능을 담은 Spring Boot 3 기반 서버 애플리케이션",
             ],
-            github: "https://github.com/younghunkimm",
-            detail: "#",
+            github: "https://github.com/younghunkimm/sparta-spring-plus",
+            detail: `${import.meta.env.BASE_URL}todo-api`,
             image: TeamSpartaCover,
         },
     ];
@@ -151,7 +145,6 @@ const ProjectsSection = () => {
                     ({
                         title,
                         period,
-                        role,
                         stack,
                         description,
                         github,
@@ -162,14 +155,13 @@ const ProjectsSection = () => {
                             key={title}
                             title={title}
                             period={period}
-                            role={role}
                             stack={stack}
                             description={description}
                             github={github}
                             detail={detail}
                             image={image}
                         />
-                    )
+                    ),
                 )}
             </div>
         </Section>
