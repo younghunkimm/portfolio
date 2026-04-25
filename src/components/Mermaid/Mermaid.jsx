@@ -10,19 +10,21 @@ const Mermaid = ({ chart }) => {
     const ref = useRef(null);
 
     useEffect(() => {
-        if (!ref.current) return;
+        if (!ref.current || !chart) return;
 
-        const id = "mermaid-" + crypto.randomUUID();
+        const renderMermaid = async () => {
+            const id = `mermaid-${crypto.randomUUID()}`;
+            const el = ref.current;
 
-        ref.current.innerHTML = "";
+            try {
+                const { svg } = await mermaid.render(id, chart.trim());
+                if (el) el.innerHTML = svg;
+            } catch (e) {
+                console.error("Mermaid render failed:", e);
+            }
+        };
 
-        setTimeout(() => {
-            mermaid.render(id, chart.trim()).then(({ svg }) => {
-                if (ref.current) {
-                    ref.current.innerHTML = svg;
-                }
-            });
-        }, 0);
+        renderMermaid();
     }, [chart]);
 
     return <div ref={ref} />;
