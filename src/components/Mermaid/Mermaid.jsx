@@ -22,7 +22,7 @@ const Mermaid = ({ chart }) => {
                     ref.current.innerHTML = svg;
                 }
             });
-        }, 0); // 👉 이거 중요 (렌더 타이밍 보정)
+        }, 0);
     }, [chart]);
 
     return <div ref={ref} />;
