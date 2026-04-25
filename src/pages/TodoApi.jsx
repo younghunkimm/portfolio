@@ -88,9 +88,10 @@ const TodoApiPage = () => {
                     title="CI/CD 파이프라인 아키텍쳐"
                     link="https://younghunkimm.github.io/posts/cicd-pipeline-1/"
                 >
-                    <ContentBox title="다이어그램">
+                    <ContentBox title="Flow Chart">
                         <Mermaid
-                            chart={`flowchart TB
+                            chart={`
+flowchart TB
     subgraph Dev [GitHub]
         A[Source Code]
         B[GitHub Actions CI CD Workflow]
@@ -124,7 +125,8 @@ const TodoApiPage = () => {
     C -->|Pull Image| F
     D -->|Env vars and secrets| F
 
-    F --> G --> H`}
+    F --> G --> H
+                            `}
                         />
                     </ContentBox>
                 </Section>
